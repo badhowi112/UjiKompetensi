@@ -15,3 +15,4 @@
 <p>P: password </p>
 <p>Catatan: Harus Mengisi Data Pegawai Dulu Sebelum Mengisi Form Tamu</p>
 <p>Karena Terdapat Foreign key pada salah satu tabel</p>
+<p>Saat input Code pada Form Pegawai Harus sesuai dengan Code Pegawai yang terdaftar di database </p>
