@@ -96,8 +96,14 @@
 
                                     //set state login failed
                                     this.loginFailed = true
+                                    this.$toast.danger({
+                    title:'Danger!',
+                    message:'Login Salah'
+                });
+            
 
                                 }
+                               
 
                             }).catch(error => {
                                 console.log(error)

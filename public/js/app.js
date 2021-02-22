@@ -2369,6 +2369,11 @@ __webpack_require__.r(__webpack_exports__);
             } else {
               //set state login failed
               _this.loginFailed = true;
+
+              _this.$toast.danger({
+                title: 'Danger!',
+                message: 'Login Salah'
+              });
             }
           })["catch"](function (error) {
             console.log(error);
@@ -40992,7 +40997,7 @@ var render = function() {
           _c(
             "router-link",
             { staticClass: "navbar-brand", attrs: { to: { name: "home" } } },
-            [_vm._v("Site Logo")]
+            [_vm._v("Laravel vue")]
           ),
           _vm._v(" "),
           _vm._m(0),
@@ -41674,7 +41679,9 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("thead", [
       _c("tr", [
-        _c("th", { staticStyle: { width: "100px" } }, [_vm._v(" Id ")]),
+        _c("th", { staticStyle: { width: "100px" } }, [
+          _vm._v(" Code Pegawai ")
+        ]),
         _vm._v(" "),
         _c("th", [_vm._v(" NIP ")]),
         _vm._v(" "),

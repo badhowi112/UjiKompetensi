@@ -28,7 +28,7 @@
                             <table class="table">
                             <thead>
                                 <tr>
-                                    <th style="width: 100px"> Id </th>
+                                    <th style="width: 100px"> Code Pegawai </th>
                                     <th> NIP </th>
                                     <th> Nama </th>
                                     <th> Jabatan </th>
