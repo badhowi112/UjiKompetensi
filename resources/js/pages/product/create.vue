@@ -102,7 +102,7 @@ export default {
 
                 this.$toast.success({
                     title:'Success!',
-                    message:'Product Uploaded successfully.'
+                    message:'Uploaded successfully.'
                 });
             })
         },

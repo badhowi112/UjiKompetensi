@@ -126,7 +126,7 @@ export default {
 
                 this.$toast.success({
                     title:'Success!',
-                    message:'Product saved successfully.'
+                    message:'saved successfully.'
                 });
             })
         },

@@ -2025,7 +2025,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this.$toast.success({
           title: 'Success!',
-          message: 'Category created successfully.'
+          message: 'created successfully.'
         });
       });
     }
@@ -2105,7 +2105,7 @@ __webpack_require__.r(__webpack_exports__);
       this.categoryForm.put("/api/category/".concat(id)).then(function () {
         _this.$toast.success({
           title: 'Success!',
-          message: 'Category updated successfully.'
+          message: 'updated successfully.'
         });
       });
     },
@@ -2244,7 +2244,7 @@ __webpack_require__.r(__webpack_exports__);
       axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"]("/api/category/".concat(category.id)).then(function () {
         _this3.$toast.success({
           title: 'Success!',
-          message: 'Category deleted successfully.'
+          message: 'deleted successfully.'
         });
       });
       var index = this.categories.indexOf(category);
@@ -2521,7 +2521,7 @@ __webpack_require__.r(__webpack_exports__);
         // this.productForm.description = '';
         _this.$toast.success({
           title: 'Success!',
-          message: 'Product Uploaded successfully.'
+          message: 'Uploaded successfully.'
         });
       });
     },
@@ -2677,7 +2677,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _this2.$toast.success({
           title: 'Success!',
-          message: 'Product saved successfully.'
+          message: 'saved successfully.'
         });
       });
     },
@@ -2843,7 +2843,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return axios["delete"]("/api/product/".concat(product.id)).then(function () {
                   _this3.$toast.success({
                     title: 'Success!',
-                    message: 'Product deleted successfully.'
+                    message: 'deleted successfully.'
                   });
                 });
 

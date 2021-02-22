@@ -117,7 +117,7 @@ export default {
             await axios.delete(`/api/product/${product.id}`).then(() => {
                 this.$toast.success({
                     title:'Success!',
-                    message:'Product deleted successfully.'
+                    message:'deleted successfully.'
                 });
             });
 

@@ -59,7 +59,7 @@ export default {
             this.categoryForm.put(`/api/category/${id}`).then(() => {
                 this.$toast.success({
                     title:'Success!',
-                    message:'Category updated successfully.'
+                    message:'updated successfully.'
                 });
             })
         },

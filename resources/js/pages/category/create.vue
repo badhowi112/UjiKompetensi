@@ -62,7 +62,7 @@ export default {
 
                 this.$toast.success({
                     title:'Success!',
-                    message:'Category created successfully.'
+                    message:'created successfully.'
                 })
 
             })

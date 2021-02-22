@@ -97,7 +97,7 @@ export default {
             axios.delete(`/api/category/${category.id}`).then(() => {
                 this.$toast.success({
                     title:'Success!',
-                    message:'Category deleted successfully.'
+                    message:'deleted successfully.'
                 });
             });
 
