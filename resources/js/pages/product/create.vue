@@ -4,33 +4,54 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Create Product</h5>
-                        <router-link :to="{name: 'product-list'}" class="btn btn-primary">Product List</router-link>
+                        <h5>Tambah Data Tamu</h5>
+                        <router-link :to="{name: 'product-list'}" class="btn btn-primary">Kembali Ke Menu</router-link>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-6 offset-3">
                                 <form @submit.prevent="createProduct">
                                     <div class="form-group">
-                                        <label for="">Product Title</label>
-                                        <input type="text" v-model="productForm.title" class="form-control" name="title" placeholder="product title" :class="{ 'is-invalid': productForm.errors.has('title') }">
-                                        <has-error :form="productForm" field="title"></has-error>
+                                        <label for="">Code Pegawai</label>
+                                        <input type="number" v-model="productForm.id_pegawai" class="form-control" name="id_pegawai" placeholder="Inputkan Code Pegawai " :class="{ 'is-invalid': productForm.errors.has('id_pegawai') }">
+                                        <has-error :form="productForm" field="id_pegawai"></has-error>
                                     </div>
                                     <div class="form-group">
-                                        <label for="">Product Price</label>
-                                        <input type="text" v-model="productForm.price" class="form-control" name="price" placeholder="product price" :class="{ 'is-invalid': productForm.errors.has('price') }">
-                                        <has-error :form="productForm" field="price"></has-error>
+                                        <label for="">NIK</label>
+                                        <input type="number" v-model="productForm.nik" class="form-control" name="nik" placeholder="Inputkan NIK " :class="{ 'is-invalid': productForm.errors.has('nik') }">
+                                        <has-error :form="productForm" field="nik"></has-error>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Nama</label>
+                                        <input type="text" v-model="productForm.nama" class="form-control" name="nama" placeholder="Inputkan Nama" :class="{ 'is-invalid': productForm.errors.has('nama') }">
+                                        <has-error :form="productForm" field="nama"></has-error>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Pekerjaan</label>
+                                        <input type="text" v-model="productForm.pekerjaan" class="form-control" name="pekerjaan" placeholder="Inputkan Pekerjaan" :class="{ 'is-invalid': productForm.errors.has('pekerjaan') }">
+                                        <has-error :form="productForm" field="pekerjaan"></has-error>
+                                    </div>
+                                     <div class="form-group">
+                                        <label for="">Alamat</label>
+                                        <input type="text" v-model="productForm.alamat" class="form-control" name="alamat" placeholder="Inputkan Alamat" :class="{ 'is-invalid': productForm.errors.has('alamat') }">
+                                        <has-error :form="productForm" field="alamat"></has-error>
+                                    </div>
+                                     <div class="form-group">
+                                        <label for="">No.Hp</label>
+                                        <input type="number" v-model="productForm.nohp" class="form-control" name="nohp" placeholder="Inputkan No HP" :class="{ 'is-invalid': productForm.errors.has('nohp') }">
+                                        <has-error :form="productForm" field="nohp"></has-error>
+                                    </div>
+                                     <div class="form-group">
+                                        <label for="">Keperluan</label>
+                                        <input type="text" v-model="productForm.keperluan" class="form-control" name="keperluan" placeholder="Inputkan Keperluan" :class="{ 'is-invalid': productForm.errors.has('keperluan') }">
+                                        <has-error :form="productForm" field="keperluan"></has-error>
                                     </div>
                                     <div class="form-group">
                                         <label for="">Product Image</label>
                                         <input type="file" class="form-control-file"  @change="onImageChange" :class="{ 'is-invalid': productForm.errors.has('image') }">
                                         <has-error :form="productForm" field="image"></has-error>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="">Product Description</label>
-                                        <textarea v-model="productForm.description" class="form-control" name="description" placeholder="product description" :class="{ 'is-invalid': productForm.errors.has('description') }" rows="3"></textarea>
-                                        <has-error :form="productForm" field="description"></has-error>
-                                    </div>
+                                   
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-success">Create Product</button>
                                     </div>
@@ -52,10 +73,14 @@ export default {
     data(){
         return {
             productForm: new Form({
-                title: '',
-                price: '',
+                id_pegawai: '',
+                nik: '',
+                nama: '',
+                pekerjaan: '',
+                alamat: '',
+                nohp: '',
+                keperluan: '',
                 image: '',
-                description: '',
             }),
         }
     },
@@ -70,10 +95,10 @@ export default {
                     console.log(e)
                 }
             }).then(({ data }) => {
-                this.productForm.title = '';
-                this.productForm.price = '';
-                this.productForm.image = '';
-                this.productForm.description = '';
+                // this.productForm.title = '';
+                // this.productForm.price = '';
+                // this.productForm.image = '';
+                // this.productForm.description = '';
 
                 this.$toast.success({
                     title:'Success!',

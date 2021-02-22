@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Product;
+use App\Tamu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class ProductController extends Controller
+class TamuController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,9 +15,9 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::with('pegawai')->get();
+        $tamus = Tamu::with('pegawai')->get();
 
-        return response()->json($products, 200);
+        return response()->json($tamus, 200);
     }
 
     /**
@@ -38,9 +38,15 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // $this->validate($request, [
+        //     'title' => 'required|max:255|unique:tamus,title',
+        //     'price' => 'required|integer',
+        //     'image' => 'required|image|max:2048',
+        //     'description' => 'required'
+        // ]);
         $this->validate($request, [
             'id_pegawai' => 'required',
-            'nik' => 'required|unique:products,nik',
+            'nik' => 'required|unique:tamus,nik',
             'nama' => 'required',
             'pekerjaan' => 'required',
             'alamat' => 'required',
@@ -50,7 +56,7 @@ class ProductController extends Controller
             
         ]);
 
-        $product = Product::create([
+        $tamus = Tamu::create([
             'id_pegawai' => $request->id_pegawai,
             'nik' => $request->nik,
             'nama' => $request->nama,
@@ -62,21 +68,21 @@ class ProductController extends Controller
 
         if($request->image){
             $imageName = time().'_'. uniqid() .'.'.$request->image->getClientOriginalExtension();
-            $request->image->move(public_path('storage/product'), $imageName);
-            $product->image = '/storage/product/' . $imageName;
-            $product->save();
+            $request->image->move(public_path('storage/tamu'), $imageName);
+            $tamus->image = '/storage/tamu/' . $imageName;
+            $tamus->save();
         }
 
-        return response()->json($product, 200);
+        return response()->json($tamus, 200);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  \App\tamu  $tamu
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Tamu $tamu)
     {
         //
     }
@@ -84,26 +90,33 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  \App\tamu  $tamu
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit(Tamu $tamu)
     {
-        return response()->json($product, 200);
+        return response()->json($tamu, 200);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Product  $product
+     * @param  \App\tamu  $tamu
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request,Tamu $tamu)
     {   
+        // $this->validate($request, [
+        //     'title' => "required|max:255|unique:tamus,title, $tamu->id",
+        //     'price' => 'required|integer',
+        //     'image' => 'sometimes|nullable|image|max:2048',
+        //     'description' => 'required'
+        // ]);
+
         $this->validate($request, [
-            'id_pegawai' => 'required',
-            'nik' => "required|unique:products,nik,$product->id",
+            'id_pegawai' => "required ,$tamu->id",
+            'nik' => 'required|unique:tamus,nik',
             'nama' => 'required',
             'pekerjaan' => 'required',
             'alamat' => 'required',
@@ -112,46 +125,45 @@ class ProductController extends Controller
             'image' => 'required|image|max:2048'
             
         ]);
-
-        $product->update([
+        $tamu->update([
             'id_pegawai' => $request->id_pegawai,
             'nik' => $request->nik,
             'nama' => $request->nama,
             'pekerjaan' => $request->pekerjaan,
             'alamat' => $request->alamat,
             'nohp' => $request->nohp,
-            'keperluan' => $request->keperluan, 
+            'keperluan' => $request->keperluan 
         ]);
 
         if($request->image){
             $imageName = time().'_'. uniqid() .'.'.$request->image->getClientOriginalExtension();
-            $request->image->move(public_path('storage/product'), $imageName);
-            $product->image = '/storage/product/' . $imageName;
-            $product->save();
+            $request->image->move(public_path('storage/tamu'), $imageName);
+            $tamu->image = '/storage/tamu/' . $imageName;
+            $tamu->save();
         }
 
-        return response()->json($product, 200);
+        return response()->json($tamu, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Product  $product
+     * @param  \App\tamu  $tamu
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(tamu $tamu)
     {
-        if($product){
-            $productImage = $product->image;
-            $imagePath = public_path($productImage);
+        if($tamu){
+            $tamuImage = $tamu->image;
+            $imagePath = public_path($tamuImage);
             
-            if($productImage && file_exists($imagePath)){
+            if($tamuImage && file_exists($imagePath)){
                 unlink($imagePath);
             }
 
-            $product->delete();
+            $tamu->delete();
         }else {
-            return response()->json('Product not found.', 404);
+            return response()->json('tamu not found.', 404);
         }
     }
 }

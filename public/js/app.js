@@ -1991,12 +1991,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       categoryForm: new vform__WEBPACK_IMPORTED_MODULE_0__["Form"]({
-        name: ''
+        nip: '',
+        nama: '',
+        jabatan: ''
       })
     };
   },
@@ -2006,7 +2018,10 @@ __webpack_require__.r(__webpack_exports__);
 
       this.categoryForm.post('/api/category').then(function (_ref) {
         var data = _ref.data;
-        _this.categoryForm.name = '';
+        // console.log(categoryForm)
+        _this.categoryForm.nip = '';
+        _this.categoryForm.nama = '';
+        _this.categoryForm.jabatan = '';
 
         _this.$toast.success({
           title: 'Success!',
@@ -2061,12 +2076,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       categoryForm: new vform__WEBPACK_IMPORTED_MODULE_0__["Form"]({
-        name: ''
+        nip: '',
+        nama: '',
+        jabatan: ''
       })
     };
   },
@@ -2087,7 +2114,9 @@ __webpack_require__.r(__webpack_exports__);
 
       var id = this.$route.params.id;
       axios.get("/api/category/".concat(id, "/edit")).then(function (response) {
-        _this2.categoryForm.name = response.data.name;
+        _this2.categoryForm.nip = response.data.nip;
+        _this2.categoryForm.nama = response.data.nama;
+        _this2.categoryForm.jabatan = response.data.jabatan;
       });
     }
   },
@@ -2107,6 +2136,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2153,31 +2184,83 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      //state loggedIn with localStorage
+      loggedIn: localStorage.getItem('loggedIn'),
+      //state token
+      token: localStorage.getItem('token'),
+      //state user logged In
+      user: [],
       categories: []
     };
   },
+  created: function created() {
+    var _this = this;
+
+    axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('http://localhost:8000/api/user', {
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      }
+    }).then(function (response) {
+      console.log(response);
+      _this.user = response.data; // assign response to state user
+    });
+  },
   methods: {
     loadCategories: function loadCategories() {
-      var _this = this;
+      var _this2 = this;
 
-      axios.get('/api/category').then(function (response) {
-        _this.categories = response.data;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/category').then(function (response) {
+        _this2.categories = response.data;
       });
     },
     deleteCategory: function deleteCategory(category) {
-      var _this2 = this;
+      var _this3 = this;
 
-      axios["delete"]("/api/category/".concat(category.id)).then(function () {
-        _this2.$toast.success({
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a["delete"]("/api/category/".concat(category.id)).then(function () {
+        _this3.$toast.success({
           title: 'Success!',
           message: 'Category deleted successfully.'
         });
       });
       var index = this.categories.indexOf(category);
       this.categories.splice(index, 1);
+    },
+    logout: function logout() {
+      var _this4 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('http://localhost:8000/api/logout').then(function () {
+        //remove localStorage
+        localStorage.removeItem("loggedIn"); //redirect
+
+        return _this4.$router.push({
+          name: 'home'
+        });
+      });
     }
   },
   mounted: function mounted() {
@@ -2196,6 +2279,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2212,9 +2297,103 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'login',
+  data: function data() {
+    return {
+      //state loggedIn with localStorage
+      loggedIn: localStorage.getItem('loggedIn'),
+      //state token
+      token: localStorage.getItem('token'),
+      //state user
+      user: [],
+      //state validation
+      validation: [],
+      //state login failed
+      loginFailed: null
+    };
+  },
+  methods: {
+    login: function login() {
+      var _this = this;
+
+      if (this.user.email && this.user.password) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('http://localhost:8000/sanctum/csrf-cookie').then(function (response) {
+          //debug cookie
+          console.log(response);
+          axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('http://localhost:8000/api/login', {
+            email: _this.user.email,
+            password: _this.user.password
+          }).then(function (res) {
+            //debug user login
+            console.log(res);
+
+            if (res.data.success) {
+              //set localStorage
+              localStorage.setItem("loggedIn", "true"); //set localStorage Token
+
+              localStorage.setItem("token", res.data.token); //change state
+
+              _this.loggedIn = true; //redirect dashboard
+
+              return _this.$router.push({
+                name: 'category-list'
+              });
+            } else {
+              //set state login failed
+              _this.loginFailed = true;
+            }
+          })["catch"](function (error) {
+            console.log(error);
+          });
+        });
+      }
+
+      this.validation = [];
+
+      if (!this.user.email) {
+        this.validation.email = true;
+      }
+
+      if (!this.user.password) {
+        this.validation.password = true;
+      }
+    }
+  },
+  //check user already logged in
   mounted: function mounted() {
-    console.log('Component mounted.');
+    if (this.loggedIn) {
+      return this.$router.push({
+        name: 'category-list'
+      });
+    }
   }
 });
 
@@ -2278,16 +2457,41 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       productForm: new vform__WEBPACK_IMPORTED_MODULE_0__["Form"]({
-        title: '',
-        price: '',
-        image: '',
-        description: ''
+        id_pegawai: '',
+        nik: '',
+        nama: '',
+        pekerjaan: '',
+        alamat: '',
+        nohp: '',
+        keperluan: '',
+        image: ''
       })
     };
   },
@@ -2305,11 +2509,11 @@ __webpack_require__.r(__webpack_exports__);
         }
       }).then(function (_ref) {
         var data = _ref.data;
-        _this.productForm.title = '';
-        _this.productForm.price = '';
-        _this.productForm.image = '';
-        _this.productForm.description = '';
 
+        // this.productForm.title = '';
+        // this.productForm.price = '';
+        // this.productForm.image = '';
+        // this.productForm.description = '';
         _this.$toast.success({
           title: 'Success!',
           message: 'Product Uploaded successfully.'
@@ -2393,16 +2597,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       productForm: new vform__WEBPACK_IMPORTED_MODULE_0__["Form"]({
-        title: '',
-        price: '',
-        image: '',
-        description: '',
+        id_pegawai: '',
+        nik: '',
+        nama: '',
+        pekerjaan: '',
+        alamat: '',
+        nohp: '',
+        keperluan: '',
         _method: 'put'
       }),
       image: ''
@@ -2414,10 +2642,15 @@ __webpack_require__.r(__webpack_exports__);
 
       var id = this.$route.params.id;
       axios.get("/api/product/".concat(id, "/edit")).then(function (response) {
-        var product = response.data;
-        _this.productForm.title = product.title;
-        _this.productForm.price = product.price;
-        _this.productForm.description = product.description;
+        var product = response.data; // console.log(product)
+
+        _this.productForm.id_pegawai = product.id_pegawai;
+        _this.productForm.nik = product.nik;
+        _this.productForm.nama = product.nama;
+        _this.productForm.pekerjaan = product.pekerjaan;
+        _this.productForm.alamat = product.alamat;
+        _this.productForm.nohp = product.nohp;
+        _this.productForm.keperluan = product.keperluan;
         _this.image = product.image;
       });
     },
@@ -2525,22 +2758,75 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      products: []
+      products: [],
+      //state loggedIn with localStorage
+      loggedIn: localStorage.getItem('loggedIn'),
+      //state token
+      token: localStorage.getItem('token'),
+      //state user logged In
+      user: []
     };
+  },
+  created: function created() {
+    var _this = this;
+
+    axios.get('http://localhost:8000/api/user', {
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      }
+    }).then(function (response) {
+      console.log(response);
+      _this.user = response.data; // assign response to state user
+    });
   },
   methods: {
     loadProducts: function loadProducts() {
-      var _this = this;
+      var _this2 = this;
 
       axios.get('/api/product').then(function (response) {
-        _this.products = response.data;
+        _this2.products = response.data;
       });
     },
     deleteProduct: function deleteProduct(product) {
-      var _this2 = this;
+      var _this3 = this;
 
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
         var index;
@@ -2550,16 +2836,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context.next = 2;
                 return axios["delete"]("/api/product/".concat(product.id)).then(function () {
-                  _this2.$toast.success({
+                  _this3.$toast.success({
                     title: 'Success!',
                     message: 'Product deleted successfully.'
                   });
                 });
 
               case 2:
-                index = _this2.products.indexOf(product);
+                index = _this3.products.indexOf(product);
 
-                _this2.products.splice(index, 1);
+                _this3.products.splice(index, 1);
 
               case 4:
               case "end":
@@ -2568,6 +2854,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           }
         }, _callee);
       }))();
+    },
+    logout: function logout() {
+      var _this4 = this;
+
+      axios.get('http://localhost:8000/api/logout').then(function () {
+        //remove localStorage
+        localStorage.removeItem("loggedIn"); //redirect
+
+        return _this4.$router.push({
+          name: 'home'
+        });
+      });
     }
   },
   mounted: function mounted() {
@@ -40699,64 +40997,7 @@ var render = function() {
           _vm._v(" "),
           _vm._m(0),
           _vm._v(" "),
-          _c(
-            "div",
-            {
-              staticClass: "collapse navbar-collapse",
-              attrs: { id: "navbarSupportedContent" }
-            },
-            [
-              _c("ul", { staticClass: "navbar-nav ml-auto" }, [
-                _c(
-                  "li",
-                  { staticClass: "nav-item" },
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "nav-link",
-                        attrs: { to: { name: "home" } }
-                      },
-                      [_vm._v("Home")]
-                    )
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c(
-                  "li",
-                  { staticClass: "nav-item" },
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "nav-link",
-                        attrs: { to: { name: "category-list" } }
-                      },
-                      [_vm._v("Product Category")]
-                    )
-                  ],
-                  1
-                ),
-                _vm._v(" "),
-                _c(
-                  "li",
-                  { staticClass: "nav-item" },
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "nav-link",
-                        attrs: { to: { name: "product-list" } }
-                      },
-                      [_vm._v("Product List")]
-                    )
-                  ],
-                  1
-                )
-              ])
-            ]
-          )
+          _vm._m(1)
         ],
         1
       )
@@ -40782,6 +41023,19 @@ var staticRenderFns = [
         }
       },
       [_c("span", { staticClass: "navbar-toggler-icon" })]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      {
+        staticClass: "collapse navbar-collapse",
+        attrs: { id: "navbarSupportedContent" }
+      },
+      [_c("ul", { staticClass: "navbar-nav ml-auto" })]
     )
   }
 ]
@@ -40817,7 +41071,7 @@ var render = function() {
                 "card-header d-flex justify-content-between align-items-center"
             },
             [
-              _c("h5", [_vm._v("Create Category")]),
+              _c("h5", [_vm._v("Tambah Data")]),
               _vm._v(" "),
               _c(
                 "router-link",
@@ -40825,7 +41079,7 @@ var render = function() {
                   staticClass: "btn btn-primary",
                   attrs: { to: { name: "category-list" } }
                 },
-                [_vm._v("Category List")]
+                [_vm._v("Kembali Ke Menu")]
               )
             ],
             1
@@ -40849,29 +41103,27 @@ var render = function() {
                       "div",
                       { staticClass: "form-group" },
                       [
-                        _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Category name")
-                        ]),
+                        _c("label", { attrs: { for: "" } }, [_vm._v("NIP")]),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.categoryForm.name,
-                              expression: "categoryForm.name"
+                              value: _vm.categoryForm.nip,
+                              expression: "categoryForm.nip"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.categoryForm.errors.has("name")
+                            "is-invalid": _vm.categoryForm.errors.has("nip")
                           },
                           attrs: {
-                            type: "text",
-                            name: "name",
-                            placeholder: "category name"
+                            type: "number",
+                            name: "nip",
+                            placeholder: "Inputkan NIP"
                           },
-                          domProps: { value: _vm.categoryForm.name },
+                          domProps: { value: _vm.categoryForm.nip },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -40879,7 +41131,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.categoryForm,
-                                "name",
+                                "nip",
                                 $event.target.value
                               )
                             }
@@ -40887,7 +41139,101 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("has-error", {
-                          attrs: { form: _vm.categoryForm, field: "name" }
+                          attrs: { form: _vm.categoryForm, field: "nip" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("Nama")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.categoryForm.nama,
+                              expression: "categoryForm.nama"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.categoryForm.errors.has("nama")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "nama",
+                            placeholder: "Inputkan Nama"
+                          },
+                          domProps: { value: _vm.categoryForm.nama },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.categoryForm,
+                                "nama",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.categoryForm, field: "nama" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("jabatan")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.categoryForm.jabatan,
+                              expression: "categoryForm.jabatan"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.categoryForm.errors.has("jabatan")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "jabatan",
+                            placeholder: "Inputkan Jabatan"
+                          },
+                          domProps: { value: _vm.categoryForm.jabatan },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.categoryForm,
+                                "jabatan",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.categoryForm, field: "jabatan" }
                         })
                       ],
                       1
@@ -40913,7 +41259,7 @@ var staticRenderFns = [
       _c(
         "button",
         { staticClass: "btn btn-success", attrs: { type: "submit" } },
-        [_vm._v("Create Category")]
+        [_vm._v("Tambah Data")]
       )
     ])
   }
@@ -40950,9 +41296,7 @@ var render = function() {
                 "card-header d-flex justify-content-between align-items-center"
             },
             [
-              _c("h5", [
-                _vm._v("Edit Category - " + _vm._s(_vm.categoryForm.name))
-              ]),
+              _c("h5", [_vm._v("Edit Data Pegawai")]),
               _vm._v(" "),
               _c(
                 "router-link",
@@ -40960,7 +41304,7 @@ var render = function() {
                   staticClass: "btn btn-primary",
                   attrs: { to: { name: "category-list" } }
                 },
-                [_vm._v("Category List")]
+                [_vm._v("Kembali Ke Menu")]
               )
             ],
             1
@@ -40984,29 +41328,27 @@ var render = function() {
                       "div",
                       { staticClass: "form-group" },
                       [
-                        _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Category name")
-                        ]),
+                        _c("label", { attrs: { for: "" } }, [_vm._v("NIP")]),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.categoryForm.name,
-                              expression: "categoryForm.name"
+                              value: _vm.categoryForm.nip,
+                              expression: "categoryForm.nip"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.categoryForm.errors.has("name")
+                            "is-invalid": _vm.categoryForm.errors.has("nip")
                           },
                           attrs: {
                             type: "text",
-                            name: "name",
+                            name: "nip",
                             placeholder: "category name"
                           },
-                          domProps: { value: _vm.categoryForm.name },
+                          domProps: { value: _vm.categoryForm.nip },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -41014,7 +41356,53 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.categoryForm,
-                                "name",
+                                "nip",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.categoryForm, field: "nip" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("Nama")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.categoryForm.nama,
+                              expression: "categoryForm.nama"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.categoryForm.errors.has("nama")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "nama",
+                            placeholder: "category name"
+                          },
+                          domProps: { value: _vm.categoryForm.nama },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.categoryForm,
+                                "nama",
                                 $event.target.value
                               )
                             }
@@ -41023,6 +41411,54 @@ var render = function() {
                         _vm._v(" "),
                         _c("has-error", {
                           attrs: { form: _vm.categoryForm, field: "name" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("Jabatan")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.categoryForm.jabatan,
+                              expression: "categoryForm.jabatan"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.categoryForm.errors.has("jabatan")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "jabatan",
+                            placeholder: "category name"
+                          },
+                          domProps: { value: _vm.categoryForm.jabatan },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.categoryForm,
+                                "jabatan",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.categoryForm, field: "jabatan" }
                         })
                       ],
                       1
@@ -41048,7 +41484,7 @@ var staticRenderFns = [
       _c(
         "button",
         { staticClass: "btn btn-success", attrs: { type: "submit" } },
-        [_vm._v("Update Category")]
+        [_vm._v("Update")]
       )
     ])
   }
@@ -41074,94 +41510,162 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "card-header d-flex justify-content-between align-items-center"
-            },
-            [
-              _c("h5", { staticClass: "mb-0" }, [_vm._v("Product Categories")]),
-              _vm._v(" "),
-              _c(
-                "router-link",
-                {
-                  staticClass: "btn btn-primary",
-                  attrs: { to: { name: "create-category" } }
-                },
-                [_vm._v("Create Category")]
-              )
-            ],
-            1
-          ),
+  return _c(
+    "div",
+    { staticClass: "dashboard", staticStyle: { "margin-top": "80px" } },
+    [
+      _c("div", { staticClass: "container" }, [
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _vm._v(
+                  "\n                        MAIN MENU\n                        "
+                ),
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "ul",
+                  { staticClass: "list-group" },
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        staticClass:
+                          "list-group-item text-dark text-decoration-none",
+                        attrs: { to: { name: "category-list" } }
+                      },
+                      [_vm._v("PEGAWAI")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "router-link",
+                      {
+                        staticClass:
+                          "list-group-item text-dark text-decoration-none",
+                        attrs: { to: { name: "product-list" } }
+                      },
+                      [_vm._v("TAMU")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "li",
+                      {
+                        staticClass:
+                          "list-group-item text-dark text-decoration-none",
+                        staticStyle: { cursor: "pointer" },
+                        on: { click: _vm.logout }
+                      },
+                      [_vm._v("LOGOUT")]
+                    )
+                  ],
+                  1
+                )
+              ])
+            ])
+          ]),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c("table", { staticClass: "table" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _vm.categories.length
-                ? _c(
-                    "tbody",
-                    _vm._l(_vm.categories, function(category) {
-                      return _c("tr", { key: category.id }, [
-                        _c("td", { staticStyle: { width: "100px" } }, [
-                          _vm._v(" " + _vm._s(category.id) + " ")
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(" " + _vm._s(category.name) + " ")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(" " + _vm._s(category.slug) + " ")]),
-                        _vm._v(" "),
-                        _c(
-                          "td",
-                          { staticStyle: { width: "170px" } },
-                          [
-                            _c(
-                              "router-link",
-                              {
-                                staticClass: "btn btn-primary btn-sm",
-                                attrs: {
-                                  to: {
-                                    name: "edit-category",
-                                    params: { id: category.id }
-                                  }
-                                }
-                              },
-                              [_vm._v("Edit")]
-                            ),
+          _c("div", { staticClass: "col-md-8" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _vm._v(
+                  "\n                        Halaman Pegawai\n                        "
+                ),
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "div",
+                  {
+                    staticClass:
+                      "card-header d-flex justify-content-between align-items-center"
+                  },
+                  [
+                    _c("h5", { staticClass: "mb-0" }, [_vm._v("List Pegawai")]),
+                    _vm._v(" "),
+                    _c(
+                      "router-link",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { to: { name: "create-category" } }
+                      },
+                      [_vm._v("Tambah Data")]
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c("table", { staticClass: "table" }, [
+                  _vm._m(0),
+                  _vm._v(" "),
+                  _vm.categories.length
+                    ? _c(
+                        "tbody",
+                        _vm._l(_vm.categories, function(category) {
+                          return _c("tr", { key: category.id }, [
+                            _c("td", { staticStyle: { width: "100px" } }, [
+                              _vm._v(" " + _vm._s(category.id) + " ")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _vm._v(" " + _vm._s(category.nip) + " ")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _vm._v(" " + _vm._s(category.nama) + " ")
+                            ]),
+                            _vm._v(" "),
+                            _c("td", [
+                              _vm._v(" " + _vm._s(category.jabatan) + " ")
+                            ]),
                             _vm._v(" "),
                             _c(
-                              "a",
-                              {
-                                staticClass: "btn btn-danger btn-sm",
-                                attrs: { href: "#" },
-                                on: {
-                                  click: function($event) {
-                                    $event.preventDefault()
-                                    return _vm.deleteCategory(category)
-                                  }
-                                }
-                              },
-                              [_vm._v("Delete")]
+                              "td",
+                              { staticStyle: { width: "170px" } },
+                              [
+                                _c(
+                                  "router-link",
+                                  {
+                                    staticClass: "btn btn-primary btn-sm",
+                                    attrs: {
+                                      to: {
+                                        name: "edit-category",
+                                        params: { id: category.id }
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Edit")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "a",
+                                  {
+                                    staticClass: "btn btn-danger btn-sm",
+                                    attrs: { href: "#" },
+                                    on: {
+                                      click: function($event) {
+                                        $event.preventDefault()
+                                        return _vm.deleteCategory(category)
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Delete")]
+                                )
+                              ],
+                              1
                             )
-                          ],
-                          1
-                        )
-                      ])
-                    }),
-                    0
-                  )
-                : _c("tbody", [_vm._m(1)])
+                          ])
+                        }),
+                        0
+                      )
+                    : _c("tbody", [_vm._m(1)])
+                ])
+              ])
             ])
           ])
         ])
       ])
-    ])
-  ])
+    ]
+  )
 }
 var staticRenderFns = [
   function() {
@@ -41172,9 +41676,11 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", { staticStyle: { width: "100px" } }, [_vm._v(" Id ")]),
         _vm._v(" "),
-        _c("th", [_vm._v(" Name ")]),
+        _c("th", [_vm._v(" NIP ")]),
         _vm._v(" "),
-        _c("th", [_vm._v(" Slug ")]),
+        _c("th", [_vm._v(" Nama ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v(" Jabatan ")]),
         _vm._v(" "),
         _c("th", { staticStyle: { width: "170px" } }, [_vm._v(" Action ")])
       ])
@@ -41214,32 +41720,137 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Home Component")
-            ]),
+  return _c("div", { staticClass: "login" }, [
+    _c(
+      "div",
+      { staticClass: "container", staticStyle: { "margin-top": "100px" } },
+      [
+        _c("div", { staticClass: "row justify-content-center" }, [
+          _c("div", { staticClass: "col-md-5" }, [
+            _vm.loginFailed
+              ? _c("div", { staticClass: "alert alert-danger" }, [
+                  _vm._v(
+                    "\n                    Email atau Password Anda salah.\n                "
+                  )
+                ])
+              : _vm._e(),
             _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an Home component.\n                "
-              )
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _vm._v(
+                  "\n                        LOGIN\n                        "
+                ),
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "form",
+                  {
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.login($event)
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("EMAIL")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user.email,
+                            expression: "user.email"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "email", placeholder: "Masukkan Email" },
+                        domProps: { value: _vm.user.email },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.user, "email", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm.validation.email
+                        ? _c(
+                            "div",
+                            { staticClass: "mt-2 alert alert-danger" },
+                            [
+                              _vm._v(
+                                "\n                                    Masukkan Email\n                                "
+                              )
+                            ]
+                          )
+                        : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", [_vm._v("PASSWORD")]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.user.password,
+                            expression: "user.password"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "password",
+                          placeholder: "Masukkan Password"
+                        },
+                        domProps: { value: _vm.user.password },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.user, "password", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm.validation.password
+                        ? _c(
+                            "div",
+                            { staticClass: "mt-2 alert alert-danger" },
+                            [
+                              _vm._v(
+                                "\n                                    Masukkan Password\n                                "
+                              )
+                            ]
+                          )
+                        : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("LOGIN")]
+                    )
+                  ]
+                )
+              ])
             ])
           ])
         ])
-      ])
-    ])
-  }
-]
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -41272,7 +41883,7 @@ var render = function() {
                 "card-header d-flex justify-content-between align-items-center"
             },
             [
-              _c("h5", [_vm._v("Create Product")]),
+              _c("h5", [_vm._v("Tambah Data Tamu")]),
               _vm._v(" "),
               _c(
                 "router-link",
@@ -41280,7 +41891,7 @@ var render = function() {
                   staticClass: "btn btn-primary",
                   attrs: { to: { name: "product-list" } }
                 },
-                [_vm._v("Product List")]
+                [_vm._v("Kembali Ke Menu")]
               )
             ],
             1
@@ -41305,7 +41916,7 @@ var render = function() {
                       { staticClass: "form-group" },
                       [
                         _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Product Title")
+                          _vm._v("Code Pegawai")
                         ]),
                         _vm._v(" "),
                         _c("input", {
@@ -41313,20 +41924,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.productForm.title,
-                              expression: "productForm.title"
+                              value: _vm.productForm.id_pegawai,
+                              expression: "productForm.id_pegawai"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.productForm.errors.has("title")
+                            "is-invalid": _vm.productForm.errors.has(
+                              "id_pegawai"
+                            )
                           },
                           attrs: {
-                            type: "text",
-                            name: "title",
-                            placeholder: "product title"
+                            type: "number",
+                            name: "id_pegawai",
+                            placeholder: "Inputkan Code Pegawai "
                           },
-                          domProps: { value: _vm.productForm.title },
+                          domProps: { value: _vm.productForm.id_pegawai },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -41334,7 +41947,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.productForm,
-                                "title",
+                                "id_pegawai",
                                 $event.target.value
                               )
                             }
@@ -41342,7 +41955,99 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("has-error", {
-                          attrs: { form: _vm.productForm, field: "title" }
+                          attrs: { form: _vm.productForm, field: "id_pegawai" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("NIK")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.nik,
+                              expression: "productForm.nik"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("nik")
+                          },
+                          attrs: {
+                            type: "number",
+                            name: "nik",
+                            placeholder: "Inputkan NIK "
+                          },
+                          domProps: { value: _vm.productForm.nik },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "nik",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "nik" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("Nama")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.nama,
+                              expression: "productForm.nama"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("nama")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "nama",
+                            placeholder: "Inputkan Nama"
+                          },
+                          domProps: { value: _vm.productForm.nama },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "nama",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "nama" }
                         })
                       ],
                       1
@@ -41353,7 +42058,7 @@ var render = function() {
                       { staticClass: "form-group" },
                       [
                         _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Product Price")
+                          _vm._v("Pekerjaan")
                         ]),
                         _vm._v(" "),
                         _c("input", {
@@ -41361,20 +42066,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.productForm.price,
-                              expression: "productForm.price"
+                              value: _vm.productForm.pekerjaan,
+                              expression: "productForm.pekerjaan"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.productForm.errors.has("price")
+                            "is-invalid": _vm.productForm.errors.has(
+                              "pekerjaan"
+                            )
                           },
                           attrs: {
                             type: "text",
-                            name: "price",
-                            placeholder: "product price"
+                            name: "pekerjaan",
+                            placeholder: "Inputkan Pekerjaan"
                           },
-                          domProps: { value: _vm.productForm.price },
+                          domProps: { value: _vm.productForm.pekerjaan },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -41382,7 +42089,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.productForm,
-                                "price",
+                                "pekerjaan",
                                 $event.target.value
                               )
                             }
@@ -41390,7 +42097,149 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("has-error", {
-                          attrs: { form: _vm.productForm, field: "price" }
+                          attrs: { form: _vm.productForm, field: "pekerjaan" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("Alamat")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.alamat,
+                              expression: "productForm.alamat"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("alamat")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "alamat",
+                            placeholder: "Inputkan Alamat"
+                          },
+                          domProps: { value: _vm.productForm.alamat },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "alamat",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "alamat" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("No.Hp")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.nohp,
+                              expression: "productForm.nohp"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("nohp")
+                          },
+                          attrs: {
+                            type: "number",
+                            name: "nohp",
+                            placeholder: "Inputkan No HP"
+                          },
+                          domProps: { value: _vm.productForm.nohp },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "nohp",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "nohp" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("Keperluan")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.keperluan,
+                              expression: "productForm.keperluan"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has(
+                              "keperluan"
+                            )
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "keperluan",
+                            placeholder: "Inputkan Keperluan"
+                          },
+                          domProps: { value: _vm.productForm.keperluan },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "keperluan",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "keperluan" }
                         })
                       ],
                       1
@@ -41415,56 +42264,6 @@ var render = function() {
                         _vm._v(" "),
                         _c("has-error", {
                           attrs: { form: _vm.productForm, field: "image" }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Product Description")
-                        ]),
-                        _vm._v(" "),
-                        _c("textarea", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.productForm.description,
-                              expression: "productForm.description"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          class: {
-                            "is-invalid": _vm.productForm.errors.has(
-                              "description"
-                            )
-                          },
-                          attrs: {
-                            name: "description",
-                            placeholder: "product description",
-                            rows: "3"
-                          },
-                          domProps: { value: _vm.productForm.description },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(
-                                _vm.productForm,
-                                "description",
-                                $event.target.value
-                              )
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.productForm, field: "description" }
                         })
                       ],
                       1
@@ -41527,9 +42326,7 @@ var render = function() {
                 "card-header d-flex justify-content-between align-items-center"
             },
             [
-              _c("h5", [
-                _vm._v("Edit Product - " + _vm._s(_vm.productForm.title) + " ")
-              ]),
+              _c("h5", [_vm._v("Edit Data ")]),
               _vm._v(" "),
               _c(
                 "router-link",
@@ -41537,7 +42334,7 @@ var render = function() {
                   staticClass: "btn btn-primary",
                   attrs: { to: { name: "product-list" } }
                 },
-                [_vm._v("Product List")]
+                [_vm._v("Kembali Ke Menu")]
               )
             ],
             1
@@ -41562,7 +42359,7 @@ var render = function() {
                       { staticClass: "form-group" },
                       [
                         _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Product Title")
+                          _vm._v("Code Pegawai")
                         ]),
                         _vm._v(" "),
                         _c("input", {
@@ -41570,20 +42367,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.productForm.title,
-                              expression: "productForm.title"
+                              value: _vm.productForm.id_pegawai,
+                              expression: "productForm.id_pegawai"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.productForm.errors.has("title")
+                            "is-invalid": _vm.productForm.errors.has(
+                              "id_pegawai"
+                            )
                           },
                           attrs: {
-                            type: "text",
-                            name: "title",
-                            placeholder: "product title"
+                            type: "number",
+                            name: "id_pegawai",
+                            placeholder: "Inputkan Code Pegawai "
                           },
-                          domProps: { value: _vm.productForm.title },
+                          domProps: { value: _vm.productForm.id_pegawai },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -41591,7 +42390,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.productForm,
-                                "title",
+                                "id_pegawai",
                                 $event.target.value
                               )
                             }
@@ -41599,7 +42398,99 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("has-error", {
-                          attrs: { form: _vm.productForm, field: "title" }
+                          attrs: { form: _vm.productForm, field: "id_pegawai" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("NIK")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.nik,
+                              expression: "productForm.nik"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("nik")
+                          },
+                          attrs: {
+                            type: "number",
+                            name: "nik",
+                            placeholder: "Inputkan NIK "
+                          },
+                          domProps: { value: _vm.productForm.nik },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "nik",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "nik" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("Nama")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.nama,
+                              expression: "productForm.nama"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("nama")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "nama",
+                            placeholder: "Inputkan Nama"
+                          },
+                          domProps: { value: _vm.productForm.nama },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "nama",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "nama" }
                         })
                       ],
                       1
@@ -41610,7 +42501,7 @@ var render = function() {
                       { staticClass: "form-group" },
                       [
                         _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Product Price")
+                          _vm._v("Pekerjaan")
                         ]),
                         _vm._v(" "),
                         _c("input", {
@@ -41618,20 +42509,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.productForm.price,
-                              expression: "productForm.price"
+                              value: _vm.productForm.pekerjaan,
+                              expression: "productForm.pekerjaan"
                             }
                           ],
                           staticClass: "form-control",
                           class: {
-                            "is-invalid": _vm.productForm.errors.has("price")
+                            "is-invalid": _vm.productForm.errors.has(
+                              "pekerjaan"
+                            )
                           },
                           attrs: {
                             type: "text",
-                            name: "price",
-                            placeholder: "product price"
+                            name: "pekerjaan",
+                            placeholder: "Inputkan Pekerjaan"
                           },
-                          domProps: { value: _vm.productForm.price },
+                          domProps: { value: _vm.productForm.pekerjaan },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
@@ -41639,7 +42532,7 @@ var render = function() {
                               }
                               _vm.$set(
                                 _vm.productForm,
-                                "price",
+                                "pekerjaan",
                                 $event.target.value
                               )
                             }
@@ -41647,7 +42540,149 @@ var render = function() {
                         }),
                         _vm._v(" "),
                         _c("has-error", {
-                          attrs: { form: _vm.productForm, field: "price" }
+                          attrs: { form: _vm.productForm, field: "pekerjaan" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("Alamat")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.alamat,
+                              expression: "productForm.alamat"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("alamat")
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "alamat",
+                            placeholder: "Inputkan Alamat"
+                          },
+                          domProps: { value: _vm.productForm.alamat },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "alamat",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "alamat" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [_vm._v("No.Hp")]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.nohp,
+                              expression: "productForm.nohp"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has("nohp")
+                          },
+                          attrs: {
+                            type: "number",
+                            name: "nohp",
+                            placeholder: "Inputkan No HP"
+                          },
+                          domProps: { value: _vm.productForm.nohp },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "nohp",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "nohp" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("Keperluan")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.productForm.keperluan,
+                              expression: "productForm.keperluan"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.productForm.errors.has(
+                              "keperluan"
+                            )
+                          },
+                          attrs: {
+                            type: "text",
+                            name: "keperluan",
+                            placeholder: "Inputkan Keperluan"
+                          },
+                          domProps: { value: _vm.productForm.keperluan },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.productForm,
+                                "keperluan",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.productForm, field: "keperluan" }
                         })
                       ],
                       1
@@ -41660,7 +42695,7 @@ var render = function() {
                           { staticClass: "form-group" },
                           [
                             _c("label", { attrs: { for: "" } }, [
-                              _vm._v("Product Image")
+                              _vm._v("Foto")
                             ]),
                             _vm._v(" "),
                             _c("input", {
@@ -41702,56 +42737,6 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("label", { attrs: { for: "" } }, [
-                          _vm._v("Product Description")
-                        ]),
-                        _vm._v(" "),
-                        _c("textarea", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.productForm.description,
-                              expression: "productForm.description"
-                            }
-                          ],
-                          staticClass: "form-control",
-                          class: {
-                            "is-invalid": _vm.productForm.errors.has(
-                              "description"
-                            )
-                          },
-                          attrs: {
-                            name: "description",
-                            placeholder: "product description",
-                            rows: "3"
-                          },
-                          domProps: { value: _vm.productForm.description },
-                          on: {
-                            input: function($event) {
-                              if ($event.target.composing) {
-                                return
-                              }
-                              _vm.$set(
-                                _vm.productForm,
-                                "description",
-                                $event.target.value
-                              )
-                            }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.productForm, field: "description" }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
                     _vm._m(0)
                   ]
                 )
@@ -41772,7 +42757,7 @@ var staticRenderFns = [
       _c(
         "button",
         { staticClass: "btn btn-success", attrs: { type: "submit" } },
-        [_vm._v("Update Product")]
+        [_vm._v("Update")]
       )
     ])
   }
@@ -41798,113 +42783,211 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("div", { staticClass: "col-md-12" }, [
-        _c("div", { staticClass: "card" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "card-header d-flex justify-content-between align-items-center"
-            },
-            [
-              _c("h5", { staticClass: "mb-0" }, [_vm._v("Product List")]),
-              _vm._v(" "),
-              _c(
-                "router-link",
-                {
-                  staticClass: "btn btn-primary",
-                  attrs: { to: { name: "create-product" } }
-                },
-                [_vm._v("Create Product")]
-              )
-            ],
-            1
-          ),
+  return _c(
+    "div",
+    { staticClass: "dashboard", staticStyle: { "margin-top": "80px" } },
+    [
+      _c("div", { staticClass: "container" }, [
+        _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-md-4" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _vm._v(
+                  "\n                        MAIN MENU\n                        "
+                ),
+                _c("hr"),
+                _vm._v(" "),
+                _c(
+                  "ul",
+                  { staticClass: "list-group" },
+                  [
+                    _c(
+                      "router-link",
+                      {
+                        staticClass:
+                          "list-group-item text-dark text-decoration-none",
+                        attrs: { to: { name: "category-list" } }
+                      },
+                      [_vm._v("PEGAWAI")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "router-link",
+                      {
+                        staticClass:
+                          "list-group-item text-dark text-decoration-none",
+                        attrs: { to: { name: "product-list" } }
+                      },
+                      [_vm._v("TAMU")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "li",
+                      {
+                        staticClass:
+                          "list-group-item text-dark text-decoration-none",
+                        staticStyle: { cursor: "pointer" },
+                        on: { click: _vm.logout }
+                      },
+                      [_vm._v("LOGOUT")]
+                    )
+                  ],
+                  1
+                )
+              ])
+            ])
+          ]),
           _vm._v(" "),
-          _c("div", { staticClass: "card-body" }, [
-            _c("table", { staticClass: "table" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _vm.products.length
-                ? _c(
-                    "tbody",
-                    _vm._l(_vm.products, function(product) {
-                      return _c("tr", { key: product.id }, [
-                        _c("td", { staticStyle: { width: "100px" } }, [
-                          _vm._v(" " + _vm._s(product.id) + " ")
-                        ]),
+          _c("div", { staticClass: "col-md-8" }, [
+            _c("div", { staticClass: "card" }, [
+              _c("div", { staticClass: "card-body" }, [
+                _vm._v(
+                  "\n                        Halaman Tamu\n                        "
+                ),
+                _c("hr"),
+                _vm._v(" "),
+                _c("div", { staticClass: "card" }, [
+                  _c(
+                    "div",
+                    {
+                      staticClass:
+                        "card-header d-flex justify-content-between align-items-center"
+                    },
+                    [
+                      _c("h5", { staticClass: "mb-0" }, [_vm._v("List Tamu")]),
+                      _vm._v(" "),
+                      _c(
+                        "router-link",
+                        {
+                          staticClass: "btn btn-primary",
+                          attrs: { to: { name: "create-product" } }
+                        },
+                        [_vm._v("Tambah Data")]
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "card-body" }, [
+                    _c("div", { staticClass: "table-responsive" }, [
+                      _c("table", { staticClass: "table" }, [
+                        _vm._m(0),
                         _vm._v(" "),
-                        _c("td", [
-                          _c(
-                            "div",
-                            {
-                              staticStyle: {
-                                "max-width": "150px",
-                                "max-height": "150px",
-                                overflow: "hidden"
-                              }
-                            },
-                            [
-                              _c("img", {
-                                staticClass: "img-fluid",
-                                attrs: { src: product.image, alt: "" }
-                              })
-                            ]
-                          )
-                        ]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(" " + _vm._s(product.title) + " ")]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(" " + _vm._s(product.slug) + " ")]),
-                        _vm._v(" "),
-                        _c(
-                          "td",
-                          { staticStyle: { width: "170px" } },
-                          [
-                            _c(
-                              "router-link",
-                              {
-                                staticClass: "btn btn-primary btn-sm",
-                                attrs: {
-                                  to: {
-                                    name: "edit-product",
-                                    params: { id: product.id }
-                                  }
-                                }
-                              },
-                              [_vm._v("Edit")]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "a",
-                              {
-                                staticClass: "btn btn-danger btn-sm",
-                                attrs: { href: "#" },
-                                on: {
-                                  click: function($event) {
-                                    $event.preventDefault()
-                                    return _vm.deleteProduct(product)
-                                  }
-                                }
-                              },
-                              [_vm._v("Delete")]
+                        _vm.products.length
+                          ? _c(
+                              "tbody",
+                              _vm._l(_vm.products, function(product) {
+                                return _c("tr", { key: product.id }, [
+                                  _c(
+                                    "td",
+                                    { staticStyle: { width: "100px" } },
+                                    [_vm._v(" " + _vm._s(product.id) + " ")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      " " + _vm._s(product.pegawai.nama) + " "
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(" " + _vm._s(product.nik) + " ")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(" " + _vm._s(product.nama) + " ")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      " " + _vm._s(product.pekerjaan) + " "
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(" " + _vm._s(product.alamat) + " ")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(" " + _vm._s(product.nohp) + " ")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _vm._v(
+                                      " " + _vm._s(product.keperluan) + " "
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("td", [
+                                    _c(
+                                      "div",
+                                      {
+                                        staticStyle: {
+                                          "max-width": "150px",
+                                          "max-height": "150px",
+                                          overflow: "hidden"
+                                        }
+                                      },
+                                      [
+                                        _c("img", {
+                                          staticClass: "img-fluid",
+                                          attrs: { src: product.image, alt: "" }
+                                        })
+                                      ]
+                                    )
+                                  ]),
+                                  _vm._v(" "),
+                                  _c(
+                                    "td",
+                                    { staticStyle: { width: "170px" } },
+                                    [
+                                      _c(
+                                        "router-link",
+                                        {
+                                          staticClass: "btn btn-primary btn-sm",
+                                          attrs: {
+                                            to: {
+                                              name: "edit-product",
+                                              params: { id: product.id }
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("Edit")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "a",
+                                        {
+                                          staticClass: "btn btn-danger btn-sm",
+                                          attrs: { href: "#" },
+                                          on: {
+                                            click: function($event) {
+                                              $event.preventDefault()
+                                              return _vm.deleteProduct(product)
+                                            }
+                                          }
+                                        },
+                                        [_vm._v("Delete")]
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ])
+                              }),
+                              0
                             )
-                          ],
-                          1
-                        )
+                          : _c("tbody", [_vm._m(1)])
                       ])
-                    }),
-                    0
-                  )
-                : _c("tbody", [_vm._m(1)])
+                    ])
+                  ])
+                ])
+              ])
             ])
           ])
         ])
       ])
-    ])
-  ])
+    ]
+  )
 }
 var staticRenderFns = [
   function() {
@@ -41915,11 +42998,21 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", { staticStyle: { width: "100px" } }, [_vm._v(" Id ")]),
         _vm._v(" "),
-        _c("th", [_vm._v(" Image ")]),
+        _c("th", [_vm._v(" nama pegawai id ")]),
         _vm._v(" "),
-        _c("th", [_vm._v(" Title ")]),
+        _c("th", [_vm._v(" nik ")]),
         _vm._v(" "),
-        _c("th", [_vm._v(" Slug ")]),
+        _c("th", [_vm._v(" nama ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v(" pekerjaan ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v(" alamat ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v(" nohp ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v(" keperluan ")]),
+        _vm._v(" "),
+        _c("th", [_vm._v(" image ")]),
         _vm._v(" "),
         _c("th", { staticStyle: { width: "170px" } }, [_vm._v(" Action ")])
       ])

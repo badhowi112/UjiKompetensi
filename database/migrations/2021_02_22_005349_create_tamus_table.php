@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCategoriesTable extends Migration
+class CreateTamusTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,18 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('tamus', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nip');
+            $table->integer('id_pegawai')->unsigned();            
+            $table->bigInteger('nik');
             $table->string('nama');
-            $table->string('jabatan');
+            $table->string('pekerjaan');
+            $table->string('alamat');
+            $table->bigInteger('nohp');
+            $table->string('keperluan')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
+          
         });
     }
 
@@ -29,6 +35,6 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('tamus');
     }
 }
