@@ -6,7 +6,7 @@
   <li>npm install</li>
   <li>npm run dev</li>
   <li>cp .env.example .env</li>
-  <li>php artisan migrate:fresh </li>
+  <li>php artisan migrate:fresh --seed</li>
   <li>php artisan serve</li>
   <li>buka cmd baru npm run watch</li>
 </ol>
