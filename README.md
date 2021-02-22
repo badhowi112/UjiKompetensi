@@ -10,6 +10,8 @@
   <li>php artisan serve</li>
   <li>buka cmd baru npm run watch</li>
 </ol>
-
+<p>Untuk Akun Login</p>
+<p>U: admin@gmail.com</p>
+<p>P: password </p>
 <p>Catatan: Harus Mengisi Data Pegawai Dulu Sebelum Mengisi Form Tamu</p>
 <p>Karena Terdapat Foreign key pada salah satu tabel</p>
