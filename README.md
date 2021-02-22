@@ -10,3 +10,6 @@
   <li>php artisan serve</li>
   <li>buka cmd baru npm run watch</li>
 </ol>
+
+<p>Catatan: Harus Mengisi Data Pegawai Dulu Sebelum Mengisi Form Tamu</p>
+<p>Karena Terdapat Foreign key pada salah satu tabel</p>
