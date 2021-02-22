@@ -41700,7 +41700,7 @@ var staticRenderFns = [
     return _c("tr", [
       _c("td", { attrs: { colspan: "4" } }, [
         _c("h5", { staticClass: "text-center mt-4 mb-4" }, [
-          _vm._v("No categories found.")
+          _vm._v("Tidak Ada Data.")
         ])
       ])
     ])
@@ -43032,7 +43032,7 @@ var staticRenderFns = [
     return _c("tr", [
       _c("td", { attrs: { colspan: "4" } }, [
         _c("h5", { staticClass: "text-center mt-4 mb-4" }, [
-          _vm._v("No products found.")
+          _vm._v("Tidak ada Data")
         ])
       ])
     ])

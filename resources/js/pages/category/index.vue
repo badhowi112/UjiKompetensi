@@ -50,7 +50,7 @@
                             <tbody v-else>
                                 <tr>
                                     <td colspan="4">
-                                        <h5 class="text-center mt-4 mb-4">No categories found.</h5>
+                                        <h5 class="text-center mt-4 mb-4">Tidak Ada Data.</h5>
                                     </td>
                                 </tr>
                             </tbody>
